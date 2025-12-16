@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2014 Ty Overby
+Copyright (c) 2014 Ty Overby, 2015-2025 StygianEntity and others
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
