@@ -266,7 +266,10 @@ where
         if unty::type_equal::<T, u8>() {
             decoder.claim_container_read::<T>(len)?;
             // optimize for reading u8 vecs
-            let mut vec = alloc::vec![0u8; len];
+            // Use with_capacity + set_len to avoid zero-initialization
+            // Safety: u8 has no destructor, so dropping uninitialized bytes is safe
+            let mut vec = Vec::with_capacity(len);
+            unsafe { vec.set_len(len) };
             decoder.reader().read(&mut vec)?;
             // Safety: Vec<T> is Vec<u8>
             Ok(unsafe { core::mem::transmute::<Vec<u8>, Vec<T>>(vec) })
@@ -297,7 +300,10 @@ where
         if unty::type_equal::<T, u8>() {
             decoder.claim_container_read::<T>(len)?;
             // optimize for reading u8 vecs
-            let mut vec = alloc::vec![0u8; len];
+            // Use with_capacity + set_len to avoid zero-initialization
+            // Safety: u8 has no destructor, so dropping uninitialized bytes is safe
+            let mut vec = Vec::with_capacity(len);
+            unsafe { vec.set_len(len) };
             decoder.reader().read(&mut vec)?;
             // Safety: Vec<T> is Vec<u8>
             Ok(unsafe { core::mem::transmute::<Vec<u8>, Vec<T>>(vec) })
