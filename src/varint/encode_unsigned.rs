@@ -9,11 +9,12 @@ pub fn varint_encode_u16<W: Writer>(
     if val <= SINGLE_BYTE_MAX as _ {
         writer.write(&[val as u8])
     } else {
-        writer.write(&[U16_BYTE])?;
+        let mut buf = [U16_BYTE, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&val.to_be_bytes()),
-            Endianness::Little => writer.write(&val.to_le_bytes()),
+            Endianness::Big => buf[1..3].copy_from_slice(&val.to_be_bytes()),
+            Endianness::Little => buf[1..3].copy_from_slice(&val.to_le_bytes()),
         }
+        writer.write(&buf)
     }
 }
 
@@ -25,17 +26,19 @@ pub fn varint_encode_u32<W: Writer>(
     if val <= SINGLE_BYTE_MAX as _ {
         writer.write(&[val as u8])
     } else if val <= u16::MAX as _ {
-        writer.write(&[U16_BYTE])?;
+        let mut buf = [U16_BYTE, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u16).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u16).to_le_bytes()),
+            Endianness::Big => buf[1..3].copy_from_slice(&(val as u16).to_be_bytes()),
+            Endianness::Little => buf[1..3].copy_from_slice(&(val as u16).to_le_bytes()),
         }
+        writer.write(&buf)
     } else {
-        writer.write(&[U32_BYTE])?;
+        let mut buf = [U32_BYTE, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&val.to_be_bytes()),
-            Endianness::Little => writer.write(&val.to_le_bytes()),
+            Endianness::Big => buf[1..5].copy_from_slice(&val.to_be_bytes()),
+            Endianness::Little => buf[1..5].copy_from_slice(&val.to_le_bytes()),
         }
+        writer.write(&buf)
     }
 }
 
@@ -47,23 +50,26 @@ pub fn varint_encode_u64<W: Writer>(
     if val <= SINGLE_BYTE_MAX as _ {
         writer.write(&[val as u8])
     } else if val <= u16::MAX as _ {
-        writer.write(&[U16_BYTE])?;
+        let mut buf = [U16_BYTE, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u16).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u16).to_le_bytes()),
+            Endianness::Big => buf[1..3].copy_from_slice(&(val as u16).to_be_bytes()),
+            Endianness::Little => buf[1..3].copy_from_slice(&(val as u16).to_le_bytes()),
         }
+        writer.write(&buf)
     } else if val <= u32::MAX as _ {
-        writer.write(&[U32_BYTE])?;
+        let mut buf = [U32_BYTE, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u32).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u32).to_le_bytes()),
+            Endianness::Big => buf[1..5].copy_from_slice(&(val as u32).to_be_bytes()),
+            Endianness::Little => buf[1..5].copy_from_slice(&(val as u32).to_le_bytes()),
         }
+        writer.write(&buf)
     } else {
-        writer.write(&[U64_BYTE])?;
+        let mut buf = [U64_BYTE, 0, 0, 0, 0, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&val.to_be_bytes()),
-            Endianness::Little => writer.write(&val.to_le_bytes()),
+            Endianness::Big => buf[1..9].copy_from_slice(&val.to_be_bytes()),
+            Endianness::Little => buf[1..9].copy_from_slice(&val.to_le_bytes()),
         }
+        writer.write(&buf)
     }
 }
 
@@ -75,29 +81,33 @@ pub fn varint_encode_u128<W: Writer>(
     if val <= SINGLE_BYTE_MAX as _ {
         writer.write(&[val as u8])
     } else if val <= u16::MAX as _ {
-        writer.write(&[U16_BYTE])?;
+        let mut buf = [U16_BYTE, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u16).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u16).to_le_bytes()),
+            Endianness::Big => buf[1..3].copy_from_slice(&(val as u16).to_be_bytes()),
+            Endianness::Little => buf[1..3].copy_from_slice(&(val as u16).to_le_bytes()),
         }
+        writer.write(&buf)
     } else if val <= u32::MAX as _ {
-        writer.write(&[U32_BYTE])?;
+        let mut buf = [U32_BYTE, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u32).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u32).to_le_bytes()),
+            Endianness::Big => buf[1..5].copy_from_slice(&(val as u32).to_be_bytes()),
+            Endianness::Little => buf[1..5].copy_from_slice(&(val as u32).to_le_bytes()),
         }
+        writer.write(&buf)
     } else if val <= u64::MAX as _ {
-        writer.write(&[U64_BYTE])?;
+        let mut buf = [U64_BYTE, 0, 0, 0, 0, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&(val as u64).to_be_bytes()),
-            Endianness::Little => writer.write(&(val as u64).to_le_bytes()),
+            Endianness::Big => buf[1..9].copy_from_slice(&(val as u64).to_be_bytes()),
+            Endianness::Little => buf[1..9].copy_from_slice(&(val as u64).to_le_bytes()),
         }
+        writer.write(&buf)
     } else {
-        writer.write(&[U128_BYTE])?;
+        let mut buf = [U128_BYTE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         match endian {
-            Endianness::Big => writer.write(&val.to_be_bytes()),
-            Endianness::Little => writer.write(&val.to_le_bytes()),
+            Endianness::Big => buf[1..17].copy_from_slice(&val.to_be_bytes()),
+            Endianness::Little => buf[1..17].copy_from_slice(&val.to_le_bytes()),
         }
+        writer.write(&buf)
     }
 }
 
